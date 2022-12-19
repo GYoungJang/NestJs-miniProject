@@ -1,6 +1,7 @@
+import { UpdateBoardDto } from './dto/update-board.dto';
 import { BoardStatus } from './board.model';
 // 서비스 안에서는 데이터베이스 관련된 로직을 처리
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Board } from './board.model';
 import { v1 as uuid } from 'uuid';
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -27,6 +28,28 @@ export class BoardsService {
   }
 
   getBoardById(id: string): Board {
-    return this.boards.find((board) => board.id === id);
+    const found = this.boards.find((board) => board.id === id);
+    if (!found) {
+      throw new NotFoundException(`Can't find Board with id ${id}`);
+    }
+    return found;
+  }
+
+  deleteBoard(id: string): void {
+    const found = this.getBoardById(id);
+    this.boards = this.boards.filter((board) => board.id !== found.id);
+  }
+
+  updateBoard(
+    id: string,
+    updateBoardDto: UpdateBoardDto,
+    status: BoardStatus,
+  ): Board {
+    const { title, description } = updateBoardDto;
+    const board = this.getBoardById(id);
+    board.title = title;
+    board.description = description;
+    board.status = status;
+    return board;
   }
 }
