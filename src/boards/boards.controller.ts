@@ -24,6 +24,11 @@ export class BoardsController {
   // getAllBoards(): Board[] {
   //   return this.boardsService.getAllBoards();
   // }
+  @Post()
+  @UsePipes(ValidationPipe)
+  createBoard(@Body() CreateBoardDto: CreateBoardDto): Promise<Board> {
+    return this.boardsService.createBoard(CreateBoardDto);
+  }
   // @Post()
   // // 핸들러 레벨 파이프
   // @UsePipes(ValidationPipe)
